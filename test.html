@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transparent Rolling Cards Carousel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        .carousel {
+            width: 80%;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.4s ease-in-out;
+            align-items: center;
+        }
+
+        .carousel-card {
+            flex: 0 0 25%;
+            margin: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+            text-align: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.4s, opacity 0.4s;
+            opacity: 0.6;
+        }
+
+        .carousel-card img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .carousel-card.active {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .carousel-buttons {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+
+        .carousel-button {
+            background-color: rgba(255, 255, 255, 0.5);
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .carousel-button:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="carousel">
+        <div class="carousel-track">
+            <div class="carousel-card">
+                <img src="https://via.placeholder.com/300" alt="Card 1">
+                <h3>Card 1</h3>
+                <p>Description for card 1.</p>
+            </div>
+            <div class="carousel-card">
+                <img src="https://via.placeholder.com/300" alt="Card 2">
+                <h3>Card 2</h3>
+                <p>Description for card 2.</p>
+            </div>
+            <div class="carousel-card">
+                <img src="https://via.placeholder.com/300" alt="Card 3">
+                <h3>Card 3</h3>
+                <p>Description for card 3.</p>
+            </div>
+            <div class="carousel-card">
+                <img src="https://via.placeholder.com/300" alt="Card 4">
+                <h3>Card 4</h3>
+                <p>Description for card 4.</p>
+            </div>
+        </div>
+        <div class="carousel-buttons">
+            <button class="carousel-button prev">&#8249;</button>
+            <button class="carousel-button next">&#8250;</button>
+        </div>
+    </div>
+
+    <script>
+        const track = document.querySelector('.carousel-track');
+        const cards = Array.from(track.children);
+        const prevButton = document.querySelector('.carousel-button.prev');
+        const nextButton = document.querySelector('.carousel-button.next');
+
+        const cardWidth = cards[0].getBoundingClientRect().width + 20; // Include margin
+
+        const moveToCard = (index) => {
+            track.style.transition = 'transform 0.4s ease-in-out';
+            track.style.transform = `translateX(-${index * cardWidth}px)`;
+            updateActiveCard();
+        };
+
+        const updateActiveCard = () => {
+            cards.forEach((card, index) => {
+                card.classList.toggle('active', index === currentIndex);
+            });
+        };
+
+        let currentIndex = 0;
+
+        prevButton.addEventListener('click', () => {
+            if (currentIndex === 0) {
+                track.style.transition = 'none';
+                currentIndex = cards.length - 1;
+                track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+                requestAnimationFrame(() => moveToCard(currentIndex - 1));
+            } else {
+                currentIndex--;
+                moveToCard(currentIndex);
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (currentIndex === cards.length - 1) {
+                track.style.transition = 'none';
+                currentIndex = 0;
+                track.style.transform = 'translateX(0px)';
+                requestAnimationFrame(() => moveToCard(currentIndex + 1));
+            } else {
+                currentIndex++;
+                moveToCard(currentIndex);
+            }
+        });
+
+        // Clone first and last card for seamless looping
+        const firstClone = cards[0].cloneNode(true);
+        const lastClone = cards[cards.length - 1].cloneNode(true);
+
+        track.appendChild(firstClone);
+        track.insertBefore(lastClone, cards[0]);
+    </script>
+</body>
+</html>
